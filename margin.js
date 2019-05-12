@@ -227,6 +227,7 @@ function drawMain() {
     var rMain = d3.select('#rMain');
     // rMain.append('text')
     var keys = alldata.data.columns;
+    var delay = 300;
     // console.log(keys)
 
     rMain.selectAll('whatever')
@@ -251,11 +252,10 @@ function drawMain() {
         .append('rect')
         .attr('width', fMainlist.width)
         .attr('height', 60)
-        .attr('pointer-events', 'all')
+        .attr('pointer-events', 'visiblePainted')
         .attr('y', 0)
         .attr('x', 0)
         .attr('fill', 'transparent')
-        // .attr('stroke', 'white'
         .on('mouseover', function() {
             d3.select(this)
                 .transition()
@@ -265,15 +265,54 @@ function drawMain() {
             d3.select(this.parentNode)
                 .append('rect')
                 .classed('temp-rect', true)
-                .attr('width', 200)
+                .attr('width', 900)
                 .attr('height', 0)
-                .attr('fill', 'blue')
+                .attr('fill', '#311b92')
                 .attr('x', 30)
-                .attr('y', -60)
+                .attr('y', -110)
                 .attr('rx', 5)
                 .attr('ry', 5)
                 .transition()
-                .attr('height', 80)
+                .duration(delay)
+                .attr('height', 100)
+            d3.select(this.parentNode)
+                .append('rect')
+                .classed('temp-rect', true)
+                .attr('fill', '#311b92')
+                .attr('transform', 'rotate(45) translate(20, -60)')
+                .transition()
+                .delay(delay/2)
+                .attr('width', 20)
+                .attr('height', 20) 
+            d3.select(this.parentNode)
+                .each(function(d) {
+                    // console.log(d["履历"])
+                    var lvli = d["履历"];
+                    lvli = lvli.split('\n')
+                    // console.log(lvli.split('\n'))
+                    var zoom_g = 
+                    d3.select(this)
+                        .append('g');
+                    zoom_g.append('rect')
+                        .attr('width', 100)
+                        .attr('height', 100)
+                        .attr('id', 'asd')
+                    zoom_g.classed('zoom-g', true)
+                        .selectAll('whatever')
+                        .data(lvli)
+                        .join('g')
+                        .attr('transform', 'translate(60, -80)')
+                       
+                        // .attr('')
+                        .classed('temp-rect', true)
+                       
+                        // .text(d=>d)
+                        .call(genLvli, d)
+                        .attr('font-family', 'microsoft yahei ui')
+                        .attr('font-size', '13px')
+                        .attr('fill', 'white')
+                        .attr('x', (d, i) => i*50)
+                })
         })
         .on('mouseout', function() {
             d3.select(this)
@@ -281,45 +320,51 @@ function drawMain() {
                 .attr('fill', 'transparent')
             d3.select(this.parentNode).selectAll('tspan')
                 .attr('fill', 'white')
-            // d3.select('#rMain')
-            //     .select('.temp-rect')
-            //     .remove();
+            d3.select('#rMain')
+                .selectAll('.temp-rect')
+                .remove();
+            d3.selectAll('.zoom-g')
+                .remove();
         })
+        .call(d3.zoom().on('zoom', function() {
+            // console.log(d3.event)
+            d3.selectAll('.zoom-g')
+                .attr('transform', `translate(${d3.event.transform.x/2},0)`)
+        }))
 
     rMain.selectAll('.rMain-g')
-    .each(genText1)
-    .on('click', function(d) {
-        this._state = ! this._state
-        // if (!this._state) {
-            d3.select('#rMain')
-            .select('.temp-rect')
-            .remove();
-        // }    
-        if (this._state)
-        d3.select(this)
-            .append('rect')
-            .classed('temp-rect', true)
-            .attr('width', 200)
-            .attr('height', 0)
-            .attr('fill', 'blue')
-            .attr('x', 30)
-            .attr('y', -60)
-            .attr('rx', 5)
-            .attr('ry', 5)
-            .transition()
-            .attr('height', 80)
-
-        // console.log(d)
-    })
-    // .on('mouseout', function() {
-    //     d3.select(this)
-    //         .select('.temp-rect')
-    //         .remove();
-    // })
-        // rMain.selectAll('.rMain-g')
-    .on('mouseover', function() {
-
-    })
+        .each(genText1)
+        .attr('pointer-events', 'all')
+        // .on('mouseover', function() {
+        //     console.log('????')
+        //     d3.select(this).select('rect')
+        //         .transition()
+        //         .attr('fill', 'rgb(0,0,0,0.2)')
+        //     d3.select(this).selectAll('tspan')
+        //         .attr('fill', '#0288D1')
+        //     d3.select(this)
+        //         .append('rect')
+        //         .classed('temp-rect', true)
+        //         .attr('width', 200)
+        //         .attr('height', 0)
+        //         .attr('fill', 'blue')
+        //         .attr('x', 30)
+        //         .attr('y', -60)
+        //         .attr('rx', 5)
+        //         .attr('ry', 5)
+        //         .transition()
+        //         .attr('height', 80)
+        // })
+        // .on('mouseout', function() {
+        //     d3.select(this).select('rect')
+        //         .transition()
+        //         .attr('fill', 'transparent')
+        //     d3.select(this).selectAll('tspan')
+        //         .attr('fill', 'white')
+        //     d3.select('#rMain')
+        //         .select('.temp-rect')
+        //         .remove();
+        // })
     var tail = d3.select('body')
         .append('div')
         .attr('id', 'tail')
@@ -462,6 +507,75 @@ function genText1(d) {
  */
 function getEntry(n, m) {
     return alldata.data.slice((n - 1) * m, n * m);
+}
+
+function genLvli(g) {
+    // var ele = g.selectAll('whatever')
+    var padding = 135
+    var limit = 7
+    g.append('circle')
+        .attr('r', 3)
+        .attr('cx', (d, i) => i * padding)
+    g.append('circle')
+        .attr('r', 5)
+        .attr('cx', (d, i) => i * padding)
+        .attr('fill', 'transparent')
+        .attr('stroke', 'white')
+   
+    // console.log(ele)
+    g.append('rect')
+        .attr('width', 120)
+        .attr('height', 3)
+        .attr('x', (d, i) => 7 + i * padding)
+        .attr('y', -2)
+    var zhiwu;
+    g.append('text')
+        .text(function(d) {
+            var time = 0;
+            for(;time < d.length; time++) {
+                if (d[time] == ',')
+                break;
+            }
+            zhiwu = d.slice(time+1);
+            return d.slice(0, time);
+        })
+        // .attr('text-anchor', 'middle')
+        .attr('x', (d, i) => -6 + i * padding)
+        .attr('y', -9)
+    g.append('rect')
+        .attr('height', 0)
+        .attr('width', 3)
+        .attr('x', (d, i) => -2 + i * padding)
+        .attr('y', 7)
+        .transition()
+        .attr('height', 60)
+   
+    g.append('text')
+        .each(function(d2, j) {
+            // console.log(d2)
+            var time = 0;
+            for(;time < d2.length; time++) {
+                if (d2[time] == ',')
+                break;
+            }
+            zhiwu = d2.slice(time+1);
+            d3.select(this).append('tspan')
+                .text(zhiwu.slice(0, limit))
+                .attr('x', 20 + j * padding)
+                .attr('y', 20)
+            if (zhiwu.length > limit) {
+                d3.select(this).append('tspan')
+                .text(zhiwu.slice(limit, 2*limit))
+                .attr('x', 20 + j * padding)
+                .attr('y', 35)
+            }
+            if (zhiwu.length > 2* limit) {
+                d3.select(this).append('tspan')
+                .text(zhiwu.slice(2*limit, 3*limit))
+                .attr('x', 20 + j * padding)
+                .attr('y', 50)
+            }
+        })    
 }
 
 window.onload = init;
