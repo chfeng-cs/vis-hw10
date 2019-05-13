@@ -70,12 +70,17 @@ async function init() {
 
     header = svg.append('g')
     header.append('text')
-        .text('Chinese Public')
-        .attr('x', 750)
-        .attr('y', 40)
-        .attr('font-size', '32px')
+        .text("中央委员统计数据可视化")
+        .attr('x', 900)
+        .attr('y', 60)
+        .attr('font-size', '25px')
         .attr('text-anchor', 'middle')
         .attr('fill', 'white')
+    header.append('polygon')
+        .attr('transform', 'translate(900, 30)')
+        .attr('points', '-200,0 200, 0, 180, 40, -180, 40')
+        .attr('fill', 'transparent')
+        .attr('stroke', 'white')
 
     var rSex = svg.append('g')
         .attr('transform', `translate(${fSex.x}, ${fSex.y})`)
@@ -1058,6 +1063,14 @@ function drawGraduate__n(hist, key, rMargin, domain_max) {
             console.log(keys1[rMargin.callbackID] +', ' + d)
             filterAllData()
         })
+        .on('mouseover', function() {
+            d3.select(this)
+                .attr('stroke', 'white')
+        })
+        .on('mouseout', function() {
+            d3.select(this)
+                .attr('stroke', 'none')
+        })
         .transition()
         .duration(1000)
         .attr('width', ((d,i) => y(graList[i][1]) - y(0)))
@@ -1243,6 +1256,14 @@ function drawBirthday__(hist, rMargin) {
             alldata.filter[3] = d;
             filterAllData()
         })
+        .on('mouseover', function() {
+            d3.select(this)
+                .attr('stroke', 'white')
+        })
+        .on('mouseout', function() {
+            d3.select(this)
+                .attr('stroke', 'none')
+        })
         .transition()
         .duration(1000)
         .attr('width', ((d,i) => y(graList[i][1]) - y(0)))
@@ -1286,17 +1307,12 @@ function filterAllData() {
         }
     }
 
-
-    //
     reDrawSex();
     genTail();
     drawGraduate();
     drawNation()
     drawMap()
     drawBirthday()
-    //...
-
-
 }
 
 
