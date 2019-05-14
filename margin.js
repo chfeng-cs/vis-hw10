@@ -69,18 +69,24 @@ async function init() {
             rgb(142,102,110), rgb(98,84,97), rgb(48,44,58))')
 
     header = svg.append('g')
+    header.append('polygon')
+        // .attr('transform', 'translate(900, 30)')
+        .attr('points', '0,0 2000, 0, 2000,30, 1140,30, 1120, 70, 690, 70, 670, 30, 0,30')
+        .attr('fill', 'rgb(0, 0, 0, 0.4)')
+        // .attr('stroke', 'white')
     header.append('text')
         .text("中央委员统计数据可视化")
         .attr('x', 900)
-        .attr('y', 60)
+        .attr('y', 50)
         .attr('font-size', '25px')
         .attr('text-anchor', 'middle')
         .attr('fill', 'white')
     header.append('polygon')
-        .attr('transform', 'translate(900, 30)')
+        .attr('transform', 'translate(900, 20)')
         .attr('points', '-200,0 200, 0, 180, 40, -180, 40')
         .attr('fill', 'transparent')
         .attr('stroke', 'white')
+    
 
     var rSex = svg.append('g')
         .attr('transform', `translate(${fSex.x}, ${fSex.y})`)
@@ -120,7 +126,7 @@ async function init() {
                     .remove();
             }
             alldata.filter[1] = undefined;
-            console.log(this._state)
+            // console.log(this._state)
             filterAllData();
         })
     rNation.select('#fbody')
@@ -252,7 +258,7 @@ async function init() {
                     .remove();
             }
             alldata.filter[4] = undefined;
-            console.log(this._state)
+            // console.log(this._state)
             filterAllData();
         })
     rGraduate.select('#fbody')
@@ -315,7 +321,7 @@ async function init() {
                     .remove();
             }
             alldata.filter[3] = undefined;
-            console.log(this._state)
+            // console.log(this._state)
             filterAllData();
         })
     rBirthday.select('#fbody')
@@ -532,6 +538,14 @@ function drawSex() {
             // console.log('asd')
             filterAllData();
         })
+        // .on('mouseover', function() {
+        //     d3.select(this)
+        //         .attr('fill', 'white')
+        // })
+        // .on('mouseout', function(d, i) {
+        //     d3.select(this)
+        //         .attr('fill', colors[i])
+        // })
 }
 function reDrawSex() {
     var dSex = [0, 0];
@@ -1059,8 +1073,8 @@ function drawGraduate__n(hist, key, rMargin, domain_max) {
             .select('path')
             .attr('d', 'M38 26H10v-4h28v4z');
             alldata.filter[keys1[rMargin.callbackID]] = d;
-            console.log(keys1)
-            console.log(keys1[rMargin.callbackID] +', ' + d)
+            // console.log(keys1)
+            // console.log(keys1[rMargin.callbackID] +', ' + d)
             filterAllData()
         })
         .on('mouseover', function() {
@@ -1291,22 +1305,24 @@ function filterAllData() {
         var flag = true
         for(var j=0; j<alldata.filter.length; j++) {
             if(alldata.filter[j] == undefined) continue;
-            else if (j == 3) {
+            if (j == 3) {
                 var year = +(alldata.alldata[i][keys[j+1]].slice(0,4))
-                if (alldata.filter[j] != year)
-                flag = false;
-                break;
+                if (alldata.filter[j] != year) {
+                    flag = false;
+                    break;
+                }
+               
             }
             else if (alldata.filter[j] != alldata.alldata[i][keys[j+1]]) {
-                flag = false;
-                break;
-            }
-        }
+                    flag = false;
+                    break;
+                }
+    }
         if (flag) {
             alldata.data[alldata.data.length] = alldata.alldata[i];
         }
     }
-
+    console.log(alldata.data.length)
     reDrawSex();
     genTail();
     drawGraduate();
